@@ -1,0 +1,128 @@
+:root {
+    --colour-primary: #002E2A;
+    --colour-secondary: #e6b412;
+    --colour-third: rgba(0, 84, 76); 
+    
+}
+
+.bg-primary {
+    background-color: var(--colour-primary);
+}
+
+.bg-primary-gradient {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), #002E2A)
+}
+
+.bg-secondary {
+    background-color: var(--colour-secondary);
+}
+
+.bg-third {
+    background-color: #0003;
+}
+  
+
+.bg-error{
+    background-color: #ff0000;
+}
+
+.bg-warning{
+    background-color: #a2840e;
+}
+
+.bg-white{
+    background-color: white;
+}
+
+.bg-black{
+    background-color: black;
+}
+
+.text-primary {
+    color: var(--colour-primary);
+}
+
+.text-secondary {
+    color: var(--colour-secondary);
+}
+
+.text-third {
+    color: var(--colour-third);
+}
+
+.text-black{
+    color: #000;
+}
+
+.text-white{
+    color: #fff;
+}
+
+.border-primary {
+    border-color: var(--colour-primary);
+}
+
+.border-secondary {
+    border-color: var(--colour-secondary);
+}
+
+.text-grey-40 {
+    --tw-text-opacity: 1;
+    color: rgb(119 119 119 / var(--tw-text-opacity));
+}
+
+.footer {
+    background-color: var(--colour-primary); /* Màu nền của footer */
+    color: white; /* Màu chữ của footer */
+    text-align: center; /* Căn giữa nội dung */
+    padding: 20px 0; /* Khoảng cách trên dưới */
+    margin-top: 20px; /* Khoảng cách phía trên */
+  }
+  
+.footer a {
+    color: white; /* Màu chữ của liên kết */
+    text-decoration: underline; /* Gạch chân liên kết */
+  }
+  
+.footer a:hover {
+    color: #1890ff; /* Màu chữ khi hover */
+}
+  
+.gradient-btn {
+    background: linear-gradient(135deg, #002E2A, #00B3A4);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Thêm transition cho box-shadow */
+}
+  
+.gradient-btn:hover {
+    background-color: #00796b; /* Màu khi hover */
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.5); /* Thêm box-shadow khi hover */
+}
+  
+.gradient-btn:active {
+    background-color: #004d40; /* Màu khi active */
+}
+
+/* custom.css */
+.gradient-btn-variant {
+    background: linear-gradient(135deg, #cccccc, #999999); /* Bạn có thể thay đổi gradient theo ý muốn */
+    border: none;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+.gradient-btn-variant:hover {
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.2); /* Hiệu ứng sáng khi hover */
+}
+  
+.gradient-btn-variant:active {
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.4); /* Hiệu ứng sáng khi active */
+}
+  
