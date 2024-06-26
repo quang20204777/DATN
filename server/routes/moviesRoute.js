@@ -51,7 +51,7 @@ router.get("/get-all-movies", async (req, res) => {
 });
 
 // update a movie
-router.post("/update-movie", authMiddleware, async (req, res) => {
+router.put("/update-movie", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
     if (!user)
@@ -92,7 +92,8 @@ router.post("/delete-movie", authMiddleware, async (req, res) => {
         messgae: "Chỉ quản trị viên có thể xóa phim!",
       });
     const checkShow = await Show.find({movie: req.body.movieId})
-    if (checkShow) return  res.send({
+    console.log(checkShow);
+    if (checkShow && checkShow.length > 0) return  res.send({
       success: false,
       message: "Phim đang có lịch chiếu!",
     });
@@ -112,7 +113,7 @@ router.post("/delete-movie", authMiddleware, async (req, res) => {
 // get a movie by id
 router.get("/get-movie-by-id/:id", async (req, res) => {
   try {
-    const movie = await Movie.findById(req.params.id);
+    const movie = await Movie.findById(req.params.id).populate('comments.user');
     res.send({
       success: true,
       message: "Lấy dữ liệu phim thành công!",
@@ -227,5 +228,35 @@ router.get("/coming-soon", (req, res) => {
       res.status(500).json({ error: "Lỗi máy chủ" });
     });
 });
+
+//comment
+router.post("/comment", authMiddleware, async (req, res) => {
+  try {
+    const { movieId, comment } = req.body;
+    // const user = await User.findById(req.body.userId);
+    // if (!user) {
+    //   return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    // }
+
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Không tìm thấy phim" });
+    }
+
+    movie.comments.push({ user: req.body.userId, comment: comment });
+    await movie.save();
+
+    res.send({
+      success: true,
+      message: "Đã gửi",
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 
 module.exports = router;

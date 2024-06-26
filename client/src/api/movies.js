@@ -25,7 +25,7 @@ export const GetAllMovies = async () => {
 // update a movie
 export const UpdateMovie = async (payload) => {
     try {
-        const response = await axiosInstance.post(`${DOMAIN_SERVER_NAME}/api/movies/update-movie`, payload);
+        const response = await axiosInstance.put(`${DOMAIN_SERVER_NAME}/api/movies/update-movie`, payload);
         return response.data;
     } catch (error) {
         return error.response;
@@ -71,20 +71,12 @@ export const GetMovieComingSoon = async () => {
     }
 }
 
-export const uploadImage = async (image) => {
+//Add comment
+export const AddComment = async (payload) => {
     try {
-      const formData = new FormData()
-      formData.append("quangimage", image)
-      const response = await axiosInstance.post(
-        `${DOMAIN_SERVER_NAME}/image/uploadimage`,
-        formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-    return response.data;
+        const response = await axiosInstance.post(`${DOMAIN_SERVER_NAME}/api/movies/comment`, payload);
+        return response.data;
     } catch (error) {
-      return error.response;
+        return error.response;
     }
-  };
+}

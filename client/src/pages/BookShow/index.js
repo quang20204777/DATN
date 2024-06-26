@@ -1,20 +1,21 @@
-import { message, Popconfirm, ConfigProvider, Button } from "antd";
+import { message, ConfigProvider, Button, Radio } from "antd";
 import moment from "moment";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { GetShowById } from "../../api/theatres";
 import { HideLoading, ShowLoading } from "../../redux/loadersSlice";
-import { BookShowTickets } from "../../api/bookings";
+// import { BookShowTickets } from "../../api/bookings";
+// import { axiosInstance } from "../../api/index.js";
 
 function BookShow() {
   const { user } = useSelector((state) => state.users);
   const [show, setShow] = React.useState(null);
   const [selectedSeats, setSelectedSeats] = React.useState([]);
   const [totalPrice, setTotalPrice] = React.useState(0);
+  const [paymentMethod, setPaymentMethod] = React.useState("zalopay");
   const params = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const getData = async () => {
     try {
@@ -27,6 +28,39 @@ function BookShow() {
       } else {
         message.error(response.message);
       }
+      dispatch(HideLoading());
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      dispatch(ShowLoading());
+      const endpoint =
+        paymentMethod === "zalopay"
+          ? "http://localhost:5000/api/payments/create-payment-zalopay"
+          : "http://localhost:5000/api/payments/create-payment-vnpay";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalPrice,
+          orderInfo: `Đặt vé: ${show.movie.title}`,
+          show: params.id,
+          seats: selectedSeats,
+          totalPrice: totalPrice,
+          user: user._id,
+        }),
+      });
+      const data = await response.json();
+      if (data.order_url) {
+        window.location.href = data.order_url;
+      } else {
+        message.error("Khởi tạo giao dịch thất bại");
+      }
+
       dispatch(HideLoading());
     } catch (error) {
       dispatch(HideLoading());
@@ -81,13 +115,13 @@ function BookShow() {
 
     const countPrice = (seat, row, price, isDelete) => {
       if (seat >= 4 && seat < row - 1) {
-        if (isDelete) price -= show.ticketPrice + 5;
-        else price += show.ticketPrice + 5;
+        if (isDelete) price -= show.ticketPrice + 5000;
+        else price += show.ticketPrice + 5000;
         return price;
       }
       if (seat === row - 1) {
-        if (isDelete) price -= show.ticketPrice * 2 + 10;
-        else price += show.ticketPrice * 2 + 10;
+        if (isDelete) price -= show.ticketPrice * 2 + 10000;
+        else price += show.ticketPrice * 2 + 10000;
         return price;
       }
       if (isDelete) price -= show.ticketPrice;
@@ -177,31 +211,50 @@ function BookShow() {
     );
   };
 
-  const book = async () => {
-    try {
-      dispatch(ShowLoading());
-      const response = await BookShowTickets({
-        show: params.id,
-        seats: selectedSeats,
-        totalPrice: totalPrice,
-        user: user._id,
-      });
-      if (response.success) {
-        message.success(response.message);
-        navigate("/profile");
-      } else {
-        message.error(response.message);
-      }
-      dispatch(HideLoading());
-    } catch (error) {
-      message.error(error.message);
-      dispatch(HideLoading());
-    }
-  };
+  // const book = async (transactionId) => {
+  //   try {
+  //     dispatch(ShowLoading());
+  //     const response = await axiosInstance.post(
+  //       "http://localhost:5000/api/payments/check-payment-status",
+  //       { app_trans_id: transactionId }
+  //     );
+  //     if (response.data.success) {
+  //       const bookResponse = await BookShowTickets({
+  //         show: params.id,
+  //         seats: selectedSeats,
+  //         totalPrice: totalPrice,
+  //         user: user._id,
+  //         transactionId: transactionId,
+  //       });
+  //       if (bookResponse.success) {
+  //         message.success(bookResponse.message);
+  //         navigate("/profile");
+  //       } else {
+  //         message.error(bookResponse.message);
+  //       }
+  //     } else {
+  //       message.error(response.data.message);
+  //     }
+  //     dispatch(HideLoading());
+  //   } catch (error) {
+  //     message.error(error.message);
+  //     dispatch(HideLoading());
+  //   }
+  // };
 
   useEffect(() => {
     getData();
   }, []);
+
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   console.log(urlParams);
+  //   const transactionId = urlParams.get("apptransid");
+  //   const status = urlParams.get("status");
+  //   if (transactionId && status === "1") {
+  //     book(transactionId);
+  //   }
+  // }, []);
 
   return (
     show && (
@@ -232,10 +285,21 @@ function BookShow() {
                   <b>Ghế đã chọn</b> : {selectedSeats.join(" , ")}
                 </h1>
                 <h1 className="text-sm">
-                  <b>Tổng tiền</b> : {totalPrice},000 VND
+                  <b>Tổng tiền</b> : {new Intl.NumberFormat('vi-VN').format(totalPrice)} VND
                 </h1>
               </div>
             </div>
+            <div className="flex uppercase card p-2 gap-3">
+              <h1 className="text-sm">Phương thức thanh toán: </h1>
+              <Radio.Group
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                value={paymentMethod}
+              >
+                <Radio value="zalopay">ZaloPay</Radio>
+                <Radio value="vnpay">VNPay</Radio>
+              </Radio.Group>
+            </div>
+
             <ConfigProvider
               theme={{
                 components: {
@@ -248,17 +312,13 @@ function BookShow() {
                 },
               }}
             >
-              <Popconfirm
-                title="Xác nhận đặt vé"
-                description="Hiện tại chúng tôi không hỗ trợ dịch vụ hủy vé. Bạn có muốn đặt vé ngay?"
-                onConfirm={() => book()}
-                cancelText="Hủy"
-                okText="Xác nhận"
+              <Button
+                type="primary"
+                style={{ height: "40px" }}
+                onClick={() => handlePayment()}
               >
-                <Button type="primary" style={{ height: "40px" }}>
-                  Đặt ngay
-                </Button>
-              </Popconfirm>
+                Đặt ngay
+              </Button>
             </ConfigProvider>
           </div>
         )}

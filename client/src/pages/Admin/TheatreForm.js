@@ -55,7 +55,7 @@ const TheatreForm = ({
       <Form
         layout="vertical"
         onFinish={onFinish}
-        initialValues={selectedTheatre}
+        initialValues={formType === "add" ? null: selectedTheatre}
       >
         <Form.Item
           label="Tên rạp chiếu"

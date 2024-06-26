@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Form,
   Row,
@@ -9,12 +9,13 @@ import {
   message,
   ConfigProvider,
   Button,
+  Avatar,
+  Upload,
 } from "antd";
 import { ShowLoading, HideLoading } from "../../redux/loadersSlice.js";
-import { ChangePassword, UpdateUser } from "../../api/users.js";
+import { ChangePassword, UpdateUser, UploadImage } from "../../api/users.js";
 
-const ProfileDetail = () => {
-  const { user } = useSelector((state) => state.users);
+const ProfileDetail = ({user}) => {
   const [edit, setEdit] = useState(false);
   const dispatch = useDispatch();
   const [changePassword, setChangePassword] = useState(false);
@@ -70,7 +71,7 @@ const ProfileDetail = () => {
       !lowercaseRegex.test(value) ||
       !uppercaseRegex.test(value) ||
       !specialCharRegex.test(value) ||
-      !numberRegex.test(value) 
+      !numberRegex.test(value)
     ) {
       return Promise.reject(
         new Error(
@@ -81,9 +82,48 @@ const ProfileDetail = () => {
 
     return Promise.resolve();
   };
+  const handleFileUpload = async (file) => {
+    try {
+      dispatch(ShowLoading());
+      const response = await UploadImage(file);
+      dispatch(HideLoading());
+      if (response.success) {
+        message.success(response.message);
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  }
 
   return (
     <div className="w-700">
+      <div className="flex flex-col mb-2">
+        <Avatar size={128} src={user.avatar} className="mb-2"></Avatar>
+        <Upload className="ml-2" action={handleFileUpload} showUploadList={false}>
+        <ConfigProvider
+        theme={{
+          components: {
+            Button: {
+              colorPrimary: `linear-gradient(135deg, #002E2A, #00B3A4);`,
+              colorPrimaryHover: `linear-gradient(135deg, #004241, #00C6C0)`,
+              colorPrimaryActive: `linear-gradient(135deg, #001D1A, #008776)`,
+              lineWidth: 0,
+            },
+          },
+        }}
+      >
+        <Button
+          type="primary"
+        >
+          Thay đổi
+        </Button>
+      </ConfigProvider>
+        </Upload>
+      </div>
+
       <Form layout="vertical" initialValues={user}>
         <Row gutter={16}>
           <Col span={24}>
@@ -257,7 +297,7 @@ const ProfileDetail = () => {
               name="newPassword"
               rules={[
                 { required: true, message: "Hãy nhập mật khẩu!" },
-                { min: 6, message: "Mật khẩu gồm ít nhất 6 ký tự!"},
+                { min: 6, message: "Mật khẩu gồm ít nhất 6 ký tự!" },
                 { validator: validatePassword },
               ]}
               hasFeedback

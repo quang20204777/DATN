@@ -14,6 +14,7 @@ import Admin from "./pages/Admin/index.js";
 import TheatresForMovie from "./pages/TheatresForMovie";
 import BookShow from "./pages/BookShow/index.js";
 import ForgotPassword from "./pages/Login/ForgotPassword.js";
+import Payment from "./pages/BookShow/Payment.js";
 
 
 function App() {
@@ -52,6 +53,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+          path="/book-show"
+          element={
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          }
+        /> 
 
           <Route
             path="/admin"

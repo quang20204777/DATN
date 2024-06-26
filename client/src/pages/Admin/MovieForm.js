@@ -14,7 +14,7 @@ import moment from "moment";
 import { HideLoading, ShowLoading } from "../../redux/loadersSlice";
 import { useDispatch } from "react-redux";
 import { AddMovie, UpdateMovie } from "../../api/movies.js";
-import { nationOption, genreOption, ageOption } from "../types.js";
+import { genreOption, ageOption } from "../types.js";
 
 const MovieForm = ({
   showMovieFormModal,
@@ -67,7 +67,7 @@ const MovieForm = ({
       width={800}
     >
       <Divider style={{ margin: "5px" }} />
-      <Form layout="vertical" initialValues={selectedMovie} onFinish={onFinish}>
+      <Form layout="vertical" initialValues={formType === "add" ? null: selectedMovie} onFinish={onFinish}>
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item label="Tên phim" name="title" rules={[{ required: true, message: "Hãy nhập tên phim!" }]}>
@@ -85,19 +85,8 @@ const MovieForm = ({
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="Quốc gia" name="nation" rules={[{ required: true, message: "Hãy chọn tên quốc gia!" }]}>
-              <Select
-                placeholder="Chọn quốc gia"
-                style={{
-                  height: "40px",
-                  border: "1px solid #8a8a8a",
-                  width: "100%",
-                }}
-              >
-                {nationOption.map((nation) => (
-                  <Select.Option value={nation}>{nation}</Select.Option>
-                ))}
-              </Select>
+            <Form.Item label="Quốc gia" name="nation" rules={[{ required: true, message: "Hãy nhập tên quốc gia!" }]}>
+            <input type="text" placeholder="Quốc gia" />
             </Form.Item>
           </Col>
           <Col span={8}>

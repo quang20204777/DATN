@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    avatar: {
+      type: String,
+      default: "https://res.cloudinary.com/dxzemhlui/image/upload/v1718014284/user_kzwivi.png"
+    },
     otp: String,
     otpExpires: Date,
     isAdmin: {

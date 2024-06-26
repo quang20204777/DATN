@@ -18,6 +18,7 @@
     "react-scripts": "5.0.1",
     "react-stripe-checkout": "^2.6.3",
     "redux": "^5.0.1",
+    "remove-accents": "^0.5.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -15,13 +15,17 @@ const bookingSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    totalPrice: { // Gán cho mỗi giao dịch.
+    totalPrice: { 
       type: Number,
       required: true,
     },
     statusCheckin: {
       type: Number,
       default: 0
+    },
+    transactionId: {
+      type: String,
+      required: true,
     }
   },
   { timestamps: true }

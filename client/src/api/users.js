@@ -90,3 +90,39 @@ export const UpdateUser = async (payload) => {
     return error;
   }
 }
+
+export const UploadImage = async (file) => {
+  try {
+    const formData = new FormData()
+    formData.append("quangimage", file)
+    const response = await axiosInstance.post(
+      `${DOMAIN_SERVER_NAME}/api/users/uploadimage`,
+      formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+  return response.data;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const GetAllUsers = async () => {
+  try {
+      const response = await axiosInstance.get(`${DOMAIN_SERVER_NAME}/api/users/get-all-users`);
+      return response.data;
+  } catch (error) {
+      return error.response;
+  }
+}
+
+export const DeleteUser = async (payload) => {
+  try {
+      const response = await axiosInstance.post(`${DOMAIN_SERVER_NAME}/api/users/delete-user`, payload);
+      return response.data;
+  } catch (error) {
+      return error.response;
+  }
+}

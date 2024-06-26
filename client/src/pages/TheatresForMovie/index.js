@@ -7,11 +7,12 @@ import {
   Card,
   Tag,
   Divider,
-  Button
+  Button,
+  Avatar,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { HideLoading, ShowLoading } from "../../redux/loadersSlice";
-import { GetMovieById } from "../../api/movies";
+import { AddComment, GetMovieById } from "../../api/movies";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { GetAllTheatresByMovie } from "../../api/theatres";
@@ -19,8 +20,6 @@ import blurLeft from "../../assets/blur-left.png";
 import blurRight from "../../assets/blur-right.png";
 import playTrailer from "../../assets/play-button.png";
 import ModalVideo from "../../components/ModalVideo.js";
-
-
 
 function TheatresForMovie() {
   // get date from query string
@@ -31,11 +30,35 @@ function TheatresForMovie() {
   const { Meta } = Card;
 
   const [movie, setMovie] = useState([]);
+  const [comment, setComment] = useState("");
   const [theatres, setTheatres] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const params = useParams();
   const location = useLocation();
+  const handleSubmitComment = async () => {
+    try {
+      dispatch(ShowLoading());
+      if (!comment) {
+        dispatch(HideLoading());
+        return message.warning("Vui lòng nhập nội dung bình luận.");
+      }
+      const response = await AddComment({
+        movieId: params.id,
+        comment: comment,
+      });
+      if (response.success) {
+        message.success(response.message);
+        getData();
+      } else {
+        message.error(response.message);
+      }
+      dispatch(HideLoading());
+    } catch (error) {
+      dispatch(HideLoading());
+      message.error(error.message);
+    }
+  };
   const getData = async () => {
     try {
       dispatch(ShowLoading());
@@ -88,7 +111,9 @@ function TheatresForMovie() {
         onClick={() => {
           navigate("/");
         }}
-      >Xem thêm</Button>
+      >
+        Xem thêm
+      </Button>
     </div>
   );
   return (
@@ -168,7 +193,8 @@ function TheatresForMovie() {
                         <span className="text-grey-40">
                           Nhà sản xuất:{" "}
                         </span>{" "}
-                        &nbsp;&nbsp;{movie.producer? movie.producer : "Chưa có dữ liệu"}
+                        &nbsp;&nbsp;
+                        {movie.producer ? movie.producer : "Chưa có dữ liệu"}
                       </p>
                       <p className="text-md mt-1">
                         {" "}
@@ -189,11 +215,13 @@ function TheatresForMovie() {
                       </p>
                       <p className="text-md mt-1">
                         <span className="text-grey-40">Diễn viên: </span>
-                        &nbsp;&nbsp; {movie.cast? movie.cast : "Chưa có dữ liệu"}
+                        &nbsp;&nbsp;{" "}
+                        {movie.cast ? movie.cast : "Chưa có dữ liệu"}
                       </p>
                       <p className="text-md mt-1">
                         <span className="text-grey-40">Đạo diễn: </span>
-                        &nbsp;&nbsp; {movie.crew? movie.crew : "Chưa có dữ liệu"}
+                        &nbsp;&nbsp;{" "}
+                        {movie.crew ? movie.crew : "Chưa có dữ liệu"}
                       </p>
                     </div>
                   </div>
@@ -239,41 +267,92 @@ function TheatresForMovie() {
               </div>
 
               <div className="mt-1 flex flex-col gap-1">
-                {theatres && theatres.length > 0? theatres.map((theatre, index) => (
-                  <div  key={index} className="card p-2">
-                    <h1 className="text-md uppercase">{theatre.name}</h1>
-                    <h1 className="text-sm">Địa chỉ : {theatre.address}</h1>
+                {theatres && theatres.length > 0 ? (
+                  theatres.map((theatre, index) => (
+                    <div key={index} className="card p-2">
+                      <h1 className="text-md uppercase">{theatre.name}</h1>
+                      <h1 className="text-sm">Địa chỉ : {theatre.address}</h1>
 
-                    <div className="divider"></div>
+                      <div className="divider"></div>
 
-                    <div className="flex gap-2">
-                      {theatre.shows
-                        .sort(
-                          (a, b) =>
-                            moment(a.time, "HH:mm") - moment(b.time, "HH:mm")
-                        )
-                        .map((show, index) => (
-                          <div
-                            key={index}
-                            className="card p-1 cursor-pointer"
-                            onClick={() => {
-                              if (localStorage.getItem("token")) {
-                                navigate(`/book-show/${show._id}`);
-                              } else {
-                                message.warning(
-                                  "Hãy đăng nhập để đặt vé xem phim!"
-                                );
-                              }
-                            }}
-                          >
-                            <h1 className="text-sm">
-                              {moment(show.time, "HH:mm").format("hh:mm A")}
-                            </h1>
-                          </div>
-                        ))}
+                      <div className="flex gap-2">
+                        {theatre.shows
+                          .sort(
+                            (a, b) =>
+                              moment(a.time, "HH:mm") - moment(b.time, "HH:mm")
+                          )
+                          .map((show, index) => (
+                            <div
+                              key={index}
+                              className="card p-1 cursor-pointer"
+                              onClick={() => {
+                                if (localStorage.getItem("token")) {
+                                  navigate(`/book-show/${show._id}`);
+                                } else {
+                                  message.warning(
+                                    "Hãy đăng nhập để đặt vé xem phim!"
+                                  );
+                                }
+                              }}
+                            >
+                              <h1 className="text-sm">
+                                {moment(show.time, "HH:mm").format("hh:mm A")}
+                              </h1>
+                            </div>
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                )) : (<p>Xin lỗi, không có suất chiếu vào ngày này, hãy chọn một ngày khác.</p>)}
+                  ))
+                ) : (
+                  <p>
+                    Xin lỗi, không có suất chiếu vào ngày này, hãy chọn một ngày
+                    khác.
+                  </p>
+                )}
+              </div>
+              <hr className="mt-1" />
+              <div className="mt-1 flex flex-col">
+                <h1 className="text-xl uppercase mb-1">Bình luận</h1>
+                <textarea
+                  placeholder="Viết bình luận..."
+                  onChange={(e) => setComment(e.target.value)}
+                ></textarea>
+                <div className="mt-1 flex justify-end">
+                  <Button
+                    onClick={() => {
+                      if (localStorage.getItem("token")) {
+                        handleSubmitComment();
+                      } else {
+                        message.warning("Bạn chưa đăng nhập!");
+                      }
+                    }}
+                  >
+                    Đăng
+                  </Button>
+                </div>
+                {movie.comments && movie.comments.length > 0 ? (
+                  <List
+                    pagination={{
+                      pageSize: 5,
+                    }}
+                    dataSource={movie.comments}
+                    renderItem={(item, index) => (
+                      <List.Item key={index}>
+                        <List.Item.Meta
+                          avatar={
+                            <Avatar
+                              src={item.user.avatar}
+                            />
+                          }
+                          title={item.user.name}
+                          description={item.comment}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                ) : (
+                  <p></p>
+                )}
               </div>
             </Col>
             {/* Đang chiếu */}
@@ -328,7 +407,11 @@ function TheatresForMovie() {
             </Col>
           </Row>
         </div>
-       <ModalVideo open={showVideo} setOpen={setShowVideo} url={movie.trailer} />
+        <ModalVideo
+          open={showVideo}
+          setOpen={setShowVideo}
+          url={movie.trailer}
+        />
       </div>
     )
   );

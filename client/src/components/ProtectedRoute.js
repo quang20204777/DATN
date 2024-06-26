@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { GetCurrentUser } from "../api/users.js";
-import { message } from "antd";
+import { Avatar, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { SetUser } from "../redux/usersSlice.js";
@@ -47,8 +47,8 @@ function ProtectedRoute({ children }) {
           </h1>
         </div>
         {user ? (
-          <div className="p-1 flex gap-1">
-            <i className="ri-shield-user-line text-white"></i>
+          <div className="p-1 flex gap-1 items-center">
+            <Avatar src={user.avatar}></Avatar>
             <h1
               className="text-sm underline text-white"
               onClick={() => {

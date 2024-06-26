@@ -4,6 +4,7 @@ import { Tabs } from "antd";
 import MovieList from "./MovieList.js";
 import TheatresList from "./TheatresList.js";
 import Checkin from "./Checkin.js";
+import UserList from "./UserList.js";
 
 const Admin = () => {
   return (
@@ -19,9 +20,10 @@ const Admin = () => {
         <Tabs.TabPane tab="Check in" key="3">
           <Checkin />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Upload Poster" key="4">
-          Upload Image
+        <Tabs.TabPane tab="Danh sách khách hàng " key="4">
+          <UserList />
         </Tabs.TabPane>
+
       </Tabs>
     </div>
   );

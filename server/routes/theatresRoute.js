@@ -39,27 +39,9 @@ router.get("/get-all-theatres", authMiddleware, async (req, res) => {
   }
 });
 
-// get all theatres by owner
-// router.post("/get-all-theatres-by-owner", authMiddleware, async (req, res) => {
-//   try {
-//     const theatres = await Theatre.find({ owner: req.body.owner }).sort({
-//       createdAt: -1,
-//     });
-//     res.send({
-//       success: true,
-//       message: "Theatres fetched successfully",
-//       data: theatres,
-//     });
-//   } catch (error) {
-//     res.send({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// });
 
 // update theatre
-router.post("/update-theatre", authMiddleware, async (req, res) => {
+router.put("/update-theatre", authMiddleware, async (req, res) => {
   try {
     await Theatre.findByIdAndUpdate(req.body.theatreId, req.body);
     res.send({
@@ -78,7 +60,7 @@ router.post("/update-theatre", authMiddleware, async (req, res) => {
 router.post("/delete-theatre", authMiddleware, async (req, res) => {
   try {
     const checkShow = await Show.find({theatre: req.body.theatreId})
-    if (checkShow) return  res.send({
+    if (checkShow && checkShow.length > 0) return  res.send({
       success: false,
       message: "Tồn tại lịch chiếu trong rạp!",
     });
@@ -131,8 +113,8 @@ router.post("/add-show", authMiddleware, async (req, res) => {
 
       // Kiểm tra xem newStartTime hoặc newEndTime nằm trong khoảng thời gian của show hiện tại
       return (
-        (newStartTime.isSameOrAfter(showStartTime) && newStartTime.isBefore(showEndTime)) ||
-        (newEndTime.isAfter(showStartTime) && newEndTime.isSameOrBefore(showEndTime)) || 
+        (newStartTime.isSameOrAfter(showStartTime) && newStartTime.isSameOrBefore(showEndTime)) ||
+        (newEndTime.isSameOrAfter(showStartTime) && newEndTime.isSameOrBefore(showEndTime)) || 
         (newStartTime.isSameOrBefore(showStartTime) && newEndTime.isSameOrAfter(showEndTime))
       );
     });

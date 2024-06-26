@@ -11,16 +11,16 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     producer: {
-      type: String
+      type: String,
     },
     duration: {
       type: Number,
       required: true,
     },
     genre: {
-      type: [String], 
-      required: true
-  },
+      type: [String],
+      required: true,
+    },
     nation: {
       type: String,
       required: true,
@@ -38,10 +38,10 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     cast: {
-      type: String
+      type: String,
     },
     crew: {
-      type: String
+      type: String,
     },
     age: {
       type: String,
@@ -49,10 +49,20 @@ const movieSchema = new mongoose.Schema(
     },
     trailer: {
       type: String,
-    }
+    },
+    comments: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "users",
+        },
+        comment: {
+          type: String,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
-
 
 module.exports = mongoose.model("movies", movieSchema);

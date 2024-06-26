@@ -6,6 +6,7 @@ import { GetAllMovies, DeleteMovie } from "../../api/movies.js";
 import { Table, message, Popconfirm, Button, ConfigProvider } from "antd";
 import moment from "moment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import removeAccents from "remove-accents";
 
 const MovieList = () => {
   const [movies, setMovies] = useState([]);
@@ -140,6 +141,12 @@ const MovieList = () => {
     },
   ];
 
+  const filteredMovies = movies.filter((movie) =>
+    removeAccents(movie.title.toLowerCase()).includes(
+      removeAccents(searchText.toLowerCase())
+    )
+  );
+
   return (
     <div>
       <div className="flex justify-between mb-1">
@@ -177,9 +184,7 @@ const MovieList = () => {
 
       <Table
         columns={columns}
-        dataSource={movies.filter((movie) =>
-          movie.title.toLowerCase().includes(searchText.toLowerCase())
-        )}
+        dataSource={filteredMovies}
         pagination={{ pageSize: 10 }}
       ></Table>
       {showMovieFormModal && (

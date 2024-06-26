@@ -42,7 +42,6 @@ function Shows({ openShowsModal, setOpenShowsModal, theatre }) {
       } else {
         message.error(moviesResponse.message);
       }
-
       const showsResponse = await GetAllShowsByTheatre({
         theatreId: theatre._id,
       });

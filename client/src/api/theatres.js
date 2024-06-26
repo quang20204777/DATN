@@ -24,23 +24,10 @@ export const GetAllTheatres = async () => {
   }
 };
 
-// // get all theatres by owner
-// export const GetAllTheatresByOwner = async (payload) => {
-//   try {
-//     const response = await axiosInstance.post(
-//       `${DOMAIN_SERVER_NAME}/api/theatres/get-all-theatres-by-owner`,
-//       payload
-//     );
-//     return response.data;
-//   } catch (error) {
-//     return error.response;
-//   }
-// };
 
-// update theatre
 export const UpdateTheatre = async (payload) => {
   try {
-    const response = await axiosInstance.post(
+    const response = await axiosInstance.put(
       `${DOMAIN_SERVER_NAME}/api/theatres/update-theatre`,
       payload
     );
@@ -78,6 +65,7 @@ export const AddShow = async (payload) => {
 
 // get all shows
 export const GetAllShowsByTheatre = async (payload) => {
+  console.log(payload);
   try {
     const response = await axiosInstance.post(
       `${DOMAIN_SERVER_NAME}/api/theatres/get-all-shows-by-theatre`,
